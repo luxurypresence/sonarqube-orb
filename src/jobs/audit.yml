@@ -1,0 +1,18 @@
+description: >
+  Job runs OWASP Dependency Check,
+
+executor: default
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: .
+  - run:
+      name: Run OWASP Dependency Check
+      command: |
+        docker run --name owasp-dependency-check --volume $(pwd):/src owasp/dependency-check --scan /src --format "ALL" --project "API Gateway Dependency Check"  --out /report --disableNodeAuditCache --disableOssIndexCache --disableCentralCache
+        docker cp owasp-dependency-check:/report odc-reports
+  - persist_to_workspace:
+      root: .
+      paths:
+        - odc-reports
