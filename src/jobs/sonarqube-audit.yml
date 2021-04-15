@@ -1,7 +1,7 @@
 description: >
   Job runs SonarQube scanner and upload results
 
-executor: default
+executor: node
 
 parameters:
   sonarqube_settings_path:
