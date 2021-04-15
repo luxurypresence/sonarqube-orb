@@ -1,5 +1,5 @@
 description: >
-  Job runs OWASP Dependency Check and SonarQube scanner. Results are send to SonarQube web app
+  Job runs SonarQube scanner and upload results
 
 executor: default
 
@@ -7,19 +7,11 @@ parameters:
   sonarqube_settings_path:
     type: string
     description: "Path to file with sonarqube settings"
-  dependency_check_project_name:
-    type: string
-    description: "Name used by OWASP Dependency Check"
 
 steps:
   - checkout
   - attach_workspace:
       at: .
-  - run:
-      name: Run OWASP Dependency Check
-      command: |
-        docker run --name owasp-dependency-check --volume $(pwd):/src owasp/dependency-check:6.1.5 --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report --disableNodeAuditCache --disableOssIndexCache --disableCentralCache
-        docker cp owasp-dependency-check:/report odc-reports
   - run:
       name: Install Sonarqube scanner
       command: |
