@@ -1,0 +1,27 @@
+description: >
+  Job runs SonarQube scanner and upload results
+
+executor: node
+
+parameters:
+  sonarqube_settings_path:
+    type: string
+    description: "Path to file with sonarqube settings"
+  sonarqube_scanner_version:
+    type: string
+    default: "4.5.0.2216-linux"
+    description: "SonarQube Scanner Version"
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: .
+  - run:
+      name: Install Sonarqube scanner
+      command: |
+        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.sonarqube_scanner_version >>.zip
+        unzip sonar-scanner-cli-<< parameters.sonarqube_scanner_version >>.zip
+  - run:
+      name: Run Sonarqube scanner
+      command: |
+        ./sonar-scanner-<< parameters.sonarqube_scanner_version >>/bin/sonar-scanner -Dproject.settings=<< parameters.sonarqube_settings_path >>
