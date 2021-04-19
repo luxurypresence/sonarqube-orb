@@ -62,6 +62,7 @@ workflows:
           add-pr-comment: false
           fail-if-semver-not-indicated: true
           publish-version-tag: true
+          ssh-fingerprints: "54:f6:18:60:17:1e:9c:e7:85:34:33:02:32:1c:80:c0"
           filters:
             branches:
               only:
