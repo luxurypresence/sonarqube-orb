@@ -7,6 +7,10 @@ parameters:
   dependency_check_project_name:
     type: string
     description: "Name used by OWASP Dependency Check"
+  dependency_check_version:
+    type: string
+    default: "6.1.6"
+    description: "OWASP Dependency Check Version"
 
 steps:
   - checkout
@@ -15,7 +19,7 @@ steps:
   - run:
       name: Run OWASP Dependency Check
       command: |
-        docker run --name owasp-dependency-check --volume $(pwd):/src owasp/dependency-check:6.1.5 --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report --disableNodeAuditCache --disableOssIndexCache --disableCentralCache
+        docker run --name owasp-dependency-check --volume $(pwd):/src owasp/dependency-check:<< parameters.dependency_check_version >> --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report --disableNodeAuditCache --disableOssIndexCache --disableCentralCache
         docker cp owasp-dependency-check:/report odc-reports
   - persist_to_workspace:
       root: .
