@@ -12,11 +12,21 @@ steps:
   - checkout
   - attach_workspace:
       at: .
+#  - restore_cache:
+#      keys:
+#        - v12-dependencies-<< parameters.cache_var >>{{ checksum "package.json" }}
+#        - v12-dependencies-<< parameters.cache_var >>
   - run:
       name: Run OWASP Dependency Check
       command: |
-        docker run --name owasp-dependency-check --volume $(pwd):/src owasp/dependency-check:6.1.5 --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report --disableNodeAuditCache --disableOssIndexCache --disableCentralCache
+        docker run --name owasp-dependency-check --volume $(pwd)/dependency-check-data:/usr/share/dependency-check/data:z --volume $(pwd):/src:z owasp/dependency-check:<< parameters.dependency_check_version >> --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
         docker cp owasp-dependency-check:/report odc-reports
+        ls
+        ls dependency-check-data
+#  - save_cache:
+#      paths:
+#        - node_modules
+#      key: v12-dependencies-<< parameters.cache_var >>{{ checksum "package.json" }}
   - persist_to_workspace:
       root: .
       paths:
