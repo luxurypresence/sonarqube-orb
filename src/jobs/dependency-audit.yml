@@ -35,7 +35,7 @@ steps:
         docker run --name owasp-dependency-check \
           -e user=$USER \
           -u $(id -u ${USER}):$(id -g ${USER}) \
-          --volume dependency-audit-data-volume:/usr/share/dependency-check/data \
+          --volume dependency-audit-data-volume:/usr/share/dependency-check/data:z \
           --volume $(pwd):/src:z \
           owasp/dependency-check:6.1.6 \
           --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
