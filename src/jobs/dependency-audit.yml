@@ -33,7 +33,7 @@ steps:
       name: Run OWASP Dependency Check
       command: |
         docker run --name owasp-dependency-check \
-          --volume dependency-audit-data-volume:/usr/share/dependency-check/data:z \
+          --volume dependency-audit-data-volume:/usr/share/dependency-check/data \
           --volume $(pwd):/src:z \
           owasp/dependency-check:6.1.6 \
           --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
