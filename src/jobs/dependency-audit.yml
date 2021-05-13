@@ -17,9 +17,9 @@ steps:
       command: echo "$(date +%U)-$(date +%Y)" > current_weak_information.txt
   - restore_cache:
       keys:
-#        TODO Remove dev1 from key
-        - dependency-check-data-dev1-{{ checksum "current_weak_information.txt" }}
-        - dependency-check-data-dev1-
+#        TODO Remove dev2 from key
+        - dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
+        - dependency-check-data-dev2-
   - run:
       name: Creates + Copy OWASP Cache Into Docker Volume
       command: |
@@ -44,7 +44,7 @@ steps:
   - save_cache:
       paths:
         - dependency-audit-data
-      key: dependency-check-data-dev1-{{ checksum "current_weak_information.txt" }}
+      key: dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
   - persist_to_workspace:
       root: .
       paths:
