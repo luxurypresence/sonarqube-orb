@@ -17,12 +17,22 @@ steps:
 #        - v12-dependencies-<< parameters.cache_var >>{{ checksum "package.json" }}
 #        - v12-dependencies-<< parameters.cache_var >>
   - run:
+      name: Creates + Copy OWASP Cache Into Docker Volume
+      command: |
+        docker volume create dependency-audit-data
+        docker run -v dependency-audit-data:/data --name copy-data-helper busybox true
+        docker rm copy-data-helper
+  - run:
       name: Run OWASP Dependency Check
       command: |
-        docker run --name owasp-dependency-check --volume $(pwd)/dependency-check-data:/usr/share/dependency-check/data:z --volume $(pwd):/src:z owasp/dependency-check:6.1.6 --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
+        docker run --name owasp-dependency-check \
+          --volume dependency-audit-data:/usr/share/dependency-check/data:z \
+          --volume $(pwd):/src:z \
+          owasp/dependency-check:6.1.6 \
+          --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
         docker cp owasp-dependency-check:/report odc-reports
-        ls
-        ls dependency-check-data
+        docker cp owasp-dependency-check:/usr/share/dependency-check/data dependency-audit-data
+        ls dependency-audit-data
 #  - save_cache:
 #      paths:
 #        - node_modules
