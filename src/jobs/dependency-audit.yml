@@ -19,7 +19,7 @@ steps:
   - run:
       name: Run OWASP Dependency Check
       command: |
-        docker run --name owasp-dependency-check --volume $(pwd)/dependency-check-data:/usr/share/dependency-check/data:z --volume $(pwd):/src:z owasp/dependency-check:<< parameters.dependency_check_version >> --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
+        docker run --name owasp-dependency-check --volume $(pwd)/dependency-check-data:/usr/share/dependency-check/data:z --volume $(pwd):/src:z owasp/dependency-check:6.1.6 --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
         docker cp owasp-dependency-check:/report odc-reports
         ls
         ls dependency-check-data
