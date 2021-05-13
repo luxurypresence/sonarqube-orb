@@ -23,6 +23,7 @@ steps:
   - run:
       name: Creates + Copy OWASP Cache Into Docker Volume
       command: |
+        ls dependency-audit-data
         docker volume create dependency-audit-data-volume
         docker run -v dependency-audit-data-volume:/data --name copy-data-helper busybox true
         mkdir -p dependency-audit-data
