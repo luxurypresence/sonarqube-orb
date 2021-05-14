@@ -15,11 +15,17 @@ steps:
   - run:
       name: Create file with current year and weak information - needed for cache
       command: echo "$(date +%U)-$(date +%Y)" > current_weak_information.txt
-#  - restore_cache:
-#      keys:
-##        TODO Remove dev2 from key
-#        - dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
-#        - dependency-check-data-dev2-
+  #  - restore_cache:
+  #      keys:
+  ##        TODO Remove dev2 from key
+  #        - dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
+  #        - dependency-check-data-dev2-
+  - run:
+      name: Download OWASP Dependency Check + Unzip
+      command: |
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.1.6/dependency-check-6.1.6-release.zip
+        unzip dependency-check-6.1.6-release.zip
+        ./dependency-check/bin/dependency-check.sh
   - run:
       name: Creates + Copy OWASP Cache Into Docker Volume
       command: |
