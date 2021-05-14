@@ -20,6 +20,10 @@ steps:
         - dependency-check-data-dev3-{{ checksum "current_weak_information.txt" }}
         - dependency-check-data-dev3-
   - run:
+      name: Whoami
+      command: |
+        whoami
+  - run:
       name: Creates + Copy OWASP Cache Into Docker Volume
       command: |
         docker volume create dependency-audit-data-volume
