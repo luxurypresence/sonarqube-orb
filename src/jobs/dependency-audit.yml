@@ -21,6 +21,12 @@ steps:
   #        - dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
   #        - dependency-check-data-dev2-
   - run:
+      name: Install yarn
+      command: |
+        mkdir /opt/yarn
+        curl -Ls https://yarnpkg.com/latest.tar.gz | tar -xz --strip-components=1 --directory /opt/yarn
+        ln -s /opt/yarn/bin/yarn /usr/bin/yarn
+  - run:
       name: Download OWASP Dependency Check + Unzip
       command: |
         wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.1.6/dependency-check-6.1.6-release.zip
