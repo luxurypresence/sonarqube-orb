@@ -23,6 +23,8 @@ steps:
       name: Whoami
       command: |
         whoami
+        id -u ${USER}
+        id -g ${USER}
   - run:
       name: Creates + Copy OWASP Cache Into Docker Volume
       command: |
