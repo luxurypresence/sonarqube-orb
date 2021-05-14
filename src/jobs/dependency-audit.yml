@@ -25,13 +25,13 @@ steps:
       command: |
         wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.1.6/dependency-check-6.1.6-release.zip
         unzip dependency-check-6.1.6-release.zip
-        ./dependency-check/bin/dependency-check.sh
   - run:
-      name: Creates + Copy OWASP Cache Into Docker Volume
+      name: Run OWASP Dependency Check
       command: |
+        ./dependency-check/bin/dependency-check.sh --scan $(pwd) --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out $(pwd)/odc-reports
         ls
-        java --version
-        wget
+        ls odc-reports
+        ls /usr/share/dependency-check/data
 #  - save_cache:
 #      paths:
 #        - dependency-audit-data
