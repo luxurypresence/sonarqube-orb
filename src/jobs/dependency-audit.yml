@@ -23,9 +23,10 @@ steps:
   - run:
       name: Install yarn
       command: |
-        mkdir /opt/yarn
-        curl -Ls https://yarnpkg.com/latest.tar.gz | tar -xz --strip-components=1 --directory /opt/yarn
-        ln -s /opt/yarn/bin/yarn /usr/bin/yarn
+        sudo mkdir /opt/yarn
+        curl -Ls https://yarnpkg.com/latest.tar.gz | sudo tar -xz --strip-components=1 --directory /opt/yarn
+        sudo ln -s /opt/yarn/bin/yarn /usr/bin/yarn
+        yarn --version
   - run:
       name: Download OWASP Dependency Check + Unzip
       command: |
