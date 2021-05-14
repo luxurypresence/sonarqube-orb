@@ -1,7 +1,6 @@
 description: >
   Job runs OWASP Dependency Check
-
-executor: java
+executor: default
 
 parameters:
   dependency_check_project_name:
@@ -15,35 +14,35 @@ steps:
   - run:
       name: Create file with current year and weak information - needed for cache
       command: echo "$(date +%U)-$(date +%Y)" > current_weak_information.txt
-  #  - restore_cache:
-  #      keys:
-  ##        TODO Remove dev2 from key
-  #        - dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
-  #        - dependency-check-data-dev2-
+  - restore_cache:
+      keys:
+        #        TODO Remove dev2 from key
+        - dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
+        - dependency-check-data-dev2-
   - run:
-      name: Install yarn
+      name: Creates + Copy OWASP Cache Into Docker Volume
       command: |
-        sudo mkdir /opt/yarn
-        curl -Ls https://yarnpkg.com/latest.tar.gz | sudo tar -xz --strip-components=1 --directory /opt/yarn
-        sudo ln -s /opt/yarn/bin/yarn /usr/bin/yarn
-        yarn --version
-  - run:
-      name: Download OWASP Dependency Check + Unzip
-      command: |
-        wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.1.6/dependency-check-6.1.6-release.zip
-        unzip dependency-check-6.1.6-release.zip
+        docker volume create dependency-audit-data-volume
+        docker run -v dependency-audit-data-volume:/data --name copy-data-helper busybox true
+        mkdir -p dependency-audit-data
+        docker cp dependency-audit-data/. copy-data-helper:/data
+        docker rm copy-data-helper
+        rm -rf dependency-audit-data
   - run:
       name: Run OWASP Dependency Check
       command: |
-        ./dependency-check/bin/dependency-check.sh --scan $(pwd) --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out $(pwd)/odc-reports
-        ls
-        ls odc-reports
-        ls /usr/share/dependency-check/data
-#  - save_cache:
-#      paths:
-#        - dependency-audit-data
-#      key: dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
-#  - persist_to_workspace:
-#      root: .
-#      paths:
-#        - odc-reports
+        docker run --name owasp-dependency-check \
+          --volume dependency-audit-data-volume:/usr/share/dependency-check/data:z \
+          --volume $(pwd):/src:z \
+          owasp/dependency-check:6.1.6 \
+          --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
+        docker cp owasp-dependency-check:/report odc-reports
+        docker cp owasp-dependency-check:/usr/share/dependency-check/data dependency-audit-data
+  - save_cache:
+      paths:
+        - dependency-audit-data
+      key: dependency-check-data-dev2-{{ checksum "current_weak_information.txt" }}
+  - persist_to_workspace:
+      root: .
+      paths:
+        - odc-reports
