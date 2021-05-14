@@ -16,39 +16,23 @@ steps:
       command: echo "$(date +%U)-$(date +%Y)" > current_weak_information.txt
   - restore_cache:
       keys:
-        #        TODO Remove dev3 from key
-        - dependency-check-data-dev3-{{ checksum "current_weak_information.txt" }}
-        - dependency-check-data-dev3-
-  - run:
-      name: Whoami
-      command: |
-        whoami
-        id -u ${USER}
-        id -g ${USER}
-  - run:
-      name: Creates + Copy OWASP Cache Into Docker Volume
-      command: |
-        docker volume create dependency-audit-data-volume
-        docker run -v dependency-audit-data-volume:/data --name copy-data-helper busybox true
-        mkdir -p dependency-audit-data
-        docker cp dependency-audit-data/. copy-data-helper:/data
-        docker rm copy-data-helper
-        rm -rf dependency-audit-data
+        #        TODO Remove dev4 from key
+        - dependency-check-data-dev4-{{ checksum "current_weak_information.txt" }}
+        - dependency-check-data-dev4-
   - run:
       name: Run OWASP Dependency Check
       command: |
         docker run --name owasp-dependency-check \
           -e user=root -u root \
-          --volume dependency-audit-data-volume:/usr/share/dependency-check/data:z \
+          --volume $(pwd)/dependency-audit-data:/usr/share/dependency-check/data:z \
           --volume $(pwd):/src:z \
+          --volume $(pwd)/odc-reports:/report:z \
           owasp/dependency-check:6.1.6 \
           --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report
-        docker cp owasp-dependency-check:/report odc-reports
-        docker cp -a owasp-dependency-check:/usr/share/dependency-check/data dependency-audit-data
   - save_cache:
       paths:
         - dependency-audit-data
-      key: dependency-check-data-dev3-{{ checksum "current_weak_information.txt" }}
+      key: dependency-check-data-dev4-{{ checksum "current_weak_information.txt" }}
   - persist_to_workspace:
       root: .
       paths:
