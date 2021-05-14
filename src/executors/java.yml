@@ -1,0 +1,4 @@
+description: >
+  This is java 9 executor.
+docker:
+  - image: 'circleci/openjdk:9-jdk'
