@@ -22,6 +22,7 @@ steps:
   - run:
       name: Run OWASP Dependency Check
       command: |
+        echo "cve.check.validforhours=24" > dependencycheck.properties
         docker run --name owasp-dependency-check \
           -e user=root -u root \
           --volume $(pwd)/dependency-audit-data:/usr/share/dependency-check/data:z \
