@@ -6,6 +6,10 @@ parameters:
   dependency_check_project_name:
     type: string
     description: "Name used by OWASP Dependency Check"
+  dependency_check_version:
+    type: string
+    default: "6.1.6"
+    description: "OWASP Dependency Check Version"
 
 steps:
   - checkout
@@ -26,7 +30,7 @@ steps:
           --volume $(pwd)/dependency-audit-data:/usr/share/dependency-check/data:z \
           --volume $(pwd):/src:z \
           --volume $(pwd)/odc-reports:/report:z \
-          owasp/dependency-check:6.1.6 \
+          owasp/dependency-check:<< parameters.dependency_check_version >> \
           --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report --cveValidForHours 24
   - save_cache:
       paths:
