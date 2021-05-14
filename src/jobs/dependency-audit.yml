@@ -16,9 +16,8 @@ steps:
       command: echo "$(date +%U)-$(date +%Y)" > current_weak_information.txt
   - restore_cache:
       keys:
-        #        TODO Remove dev4 from key
-        - dependency-check-data-dev4-{{ checksum "current_weak_information.txt" }}
-        - dependency-check-data-dev4-
+        - dependency-check-data-v1-{{ checksum "current_weak_information.txt" }}
+        - dependency-check-data-v1-
   - run:
       name: Run OWASP Dependency Check
       command: |
@@ -32,7 +31,7 @@ steps:
   - save_cache:
       paths:
         - dependency-audit-data
-      key: dependency-check-data-dev4-{{ checksum "current_weak_information.txt" }}
+      key: dependency-check-data-v1-{{ checksum "current_weak_information.txt" }}
   - persist_to_workspace:
       root: .
       paths:
