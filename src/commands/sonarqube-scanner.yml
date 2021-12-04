@@ -1,7 +1,5 @@
 description: >
-  Job runs SonarQube commands scanner
-
-executor: node
+  Commands runs SonarQube scanner and uploads results
 
 parameters:
   # Analysis Parameters
@@ -61,37 +59,54 @@ parameters:
     type: string
     description: "SonarQube Scanner Version"
     default: "4.5.0.2216-linux"
+  build_pr:
+    type: boolean
+    description: "Run command for branch or PR"
+    default: false
   pr_target_branch:
     type: string
     description: "Pull Request target branch"
     default: staging
-  pull_request:
-    type: boolean
-    description: "CircleCI Pull request trigger"
-    default: false
 
 steps:
-  - checkout
-  - attach_workspace:
-      at: .
   - run:
-      name: Install Sonarqube scanner
+      name: Run Sonarqube Scanner
       command: |
-        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.scanner_version >>.zip
-        unzip sonar-scanner-cli-<< parameters.scanner_version >>.zip
-  - sonarqube-scanner:
-      scanner_version: << parameters.scanner_version >>
-      host_url: << parameters.host_url >>
-      login_token: << parameters.login_token >>
-      project_key: << parameters.project_key >>
-      project_name: << parameters.project_name >>
-      sources: << parameters.sources >>
-      tests: << parameters.tests >>
-      js_lcov_report_paths: << parameters.js_lcov_report_paths >>
-      test_execution_report_path: << parameters.test_execution_report_path >>
-      test_inclusions: << parameters.test_inclusions >>
-      xml_report_path: << parameters.xml_report_path >>
-      json_report_path: << parameters.json_report_path >>
-      html_report_path: << parameters.html_report_path >>
-      pr_target_branch: << parameters.pr_target_branch >>
-      build_pr: << parameters.pull_request >>
+        if [ -z "${SERVER_URL}" ]; then
+            SERVER_URL=$SONARQUBE_SERVER_URL
+        fi
+        if [ -z "${LOGIN_TOKEN}" ]; then
+            LOGIN_TOKEN=$SONARQUBE_SERVER_LOGIN
+        fi
+        if [ -z "${PROJECT_NAME}" ]; then
+            PROJECT_NAME=$PROJECT_KEY
+        fi
+        SONAR_CMD_SCOPE="-Dsonar.branch.name=$CIRCLE_BRANCH"
+        if [ "${BUILD_PR}" = 1 ]; then
+          SONAR_CMD_SCOPE="-Dsonar.pullrequest.key=$CIRCLE_PULL_REQUEST -Dsonar.pullrequest.branch=$CIRCLE_BRANCH -Dsonar.pullrequest.base=$PR_TARGET_BRANCH"
+        fi
+        echo "BUILD_PR ${BUILD_PR}"
+        echo "SONAR_CMD_SCOPE ${SONAR_CMD_SCOPE}"
+        echo "CIRCLE_PULL_REQUEST ${CIRCLE_PULL_REQUEST}"
+        ./sonar-scanner-<< parameters.scanner_version >>/bin/sonar-scanner \
+          -Dsonar.host.url=$SERVER_URL \
+          -Dsonar.login=$LOGIN_TOKEN \
+          -Dsonar.projectKey=<< parameters.project_key >> \
+          -Dsonar.projectName="$PROJECT_NAME" \
+          -Dsonar.sources=<< parameters.sources >> \
+          -Dsonar.tests=<< parameters.tests >> \
+          -Dsonar.javascript.lcov.reportPaths=<< parameters.js_lcov_report_paths >> \
+          -Dsonar.testExecutionReportPaths=<< parameters.test_execution_report_path >> \
+          -Dsonar.test.inclusions="$TEST_INCLUSIONS" \
+          -Dsonar.dependencyCheck.xmlReportPath=<< parameters.xml_report_path >> \
+          -Dsonar.dependencyCheck.jsonReportPath=<< parameters.json_report_path >> \
+          -Dsonar.dependencyCheck.htmlReportPath=<< parameters.html_report_path >> \
+          $SONAR_CMD_SCOPE
+      environment:
+        SERVER_URL: << parameters.host_url >>
+        LOGIN_TOKEN: << parameters.login_token >>
+        PROJECT_KEY: << parameters.project_key >>
+        PROJECT_NAME: << parameters.project_name >>
+        TEST_INCLUSIONS: << parameters.test_inclusions >>
+        BUILD_PR: << parameters.build_pr >>
+        PR_TARGET_BRANCH: << parameters.pr_target_branch >>
