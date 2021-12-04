@@ -79,7 +79,7 @@ steps:
       command: |
         wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.scanner_version >>.zip
         unzip sonar-scanner-cli-<< parameters.scanner_version >>.zip
-  - my_command_test:
+  - sonarqube-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
       login_token: << parameters.login_token >>
