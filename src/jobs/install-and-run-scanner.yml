@@ -74,12 +74,9 @@ steps:
   - checkout
   - attach_workspace:
       at: .
-  - run:
-      name: Install Sonarqube scanner
-      command: |
-        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.scanner_version >>.zip
-        unzip sonar-scanner-cli-<< parameters.scanner_version >>.zip
-  - sonarqube-scanner:
+  - install-scanner:
+      scanner_version: << parameters.scanner_version >>
+  - run-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
       login_token: << parameters.login_token >>

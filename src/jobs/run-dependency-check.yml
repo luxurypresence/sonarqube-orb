@@ -1,0 +1,25 @@
+description: >
+  Job runs OWASP Dependency Check
+executor: default
+
+parameters:
+  project_name:
+    type: string
+    description: "Name used by OWASP Dependency Check"
+  version:
+    type: string
+    default: "6.1.6"
+    description: "OWASP Dependency Check Version"
+  report_path:
+    type: string
+    description: "Dependency Report Path"
+    default: odc-reports
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: .
+  - run-dependency-check:
+      project_name: << parameters.project_name >>
+      version: << parameters.version >>
+      report_path: << parameters.report_path >>
