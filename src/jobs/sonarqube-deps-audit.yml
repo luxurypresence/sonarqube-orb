@@ -1,7 +1,7 @@
 description: >
   Job runs SonarQube commands scanner
 
-executor: machine
+executor: default
 
 parameters:
   # Analysis Parameters
