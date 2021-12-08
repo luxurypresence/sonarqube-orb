@@ -2,13 +2,17 @@ description: >
   Job runs OWASP Dependency Check
 
 parameters:
-  dependency_check_project_name:
+  project_name:
     type: string
     description: "Name used by OWASP Dependency Check"
-  dependency_check_version:
+  version:
     type: string
     default: "6.1.6"
     description: "OWASP Dependency Check Version"
+  report_path:
+    type: string
+    description: "Dependency Report Path"
+    default: odc-reports
 
 steps:
   - run:
@@ -26,8 +30,8 @@ steps:
           --volume $(pwd)/dependency-audit-data:/usr/share/dependency-check/data:z \
           --volume $(pwd):/src:z \
           --volume $(pwd)/odc-reports:/report:z \
-          owasp/dependency-check:<< parameters.dependency_check_version >> \
-          --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report --cveValidForHours 24
+          owasp/dependency-check:<< parameters.version >> \
+          --scan /src --format "ALL" --project "<< parameters.project_name >>"  --out /report --cveValidForHours 24
   - save_cache:
       paths:
         - dependency-audit-data
@@ -35,4 +39,4 @@ steps:
   - persist_to_workspace:
       root: .
       paths:
-        - odc-reports
+        - << parameters.report_path >>

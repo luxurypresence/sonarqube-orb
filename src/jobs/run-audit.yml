@@ -1,7 +1,7 @@
 description: >
   Job runs SonarQube commands scanner
 
-executor: node
+executor: default
 
 parameters:
   # Analysis Parameters
@@ -69,16 +69,25 @@ parameters:
     type: boolean
     description: "CircleCI Pull request trigger"
     default: false
+  dependency_check_version:
+    type: string
+    default: "6.1.6"
+    description: "OWASP Dependency Check Version"
+  dependency_report_path:
+    type: string
+    description: "Dependency Report Path"
+    default: odc-reports
 
 steps:
   - checkout
   - attach_workspace:
       at: .
-  - run:
-      name: Install Sonarqube scanner
-      command: |
-        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.scanner_version >>.zip
-        unzip sonar-scanner-cli-<< parameters.scanner_version >>.zip
+  - run-dependency-check:
+      project_name: << parameters.project_key >>
+      version: << parameters.dependency_check_version >>
+      report_path: << parameters.dependency_report_path >>
+  - install-scanner:
+      scanner_version: << parameters.scanner_version >>
   - sonarqube-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
