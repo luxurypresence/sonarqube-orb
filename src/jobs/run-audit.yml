@@ -88,7 +88,7 @@ steps:
       report_path: << parameters.dependency_report_path >>
   - install-scanner:
       scanner_version: << parameters.scanner_version >>
-  - sonarqube-scanner:
+  - run-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
       login_token: << parameters.login_token >>
