@@ -1,0 +1,38 @@
+description: >
+  Job runs OWASP Dependency Check
+
+parameters:
+  dependency_check_project_name:
+    type: string
+    description: "Name used by OWASP Dependency Check"
+  dependency_check_version:
+    type: string
+    default: "6.1.6"
+    description: "OWASP Dependency Check Version"
+
+steps:
+  - run:
+      name: Create file with current year and weak information - needed for cache
+      command: echo "$(date +%U)-$(date +%Y)" > current_weak_information.txt
+  - restore_cache:
+      keys:
+        - dependency-check-data-v1-{{ checksum "current_weak_information.txt" }}
+        - dependency-check-data-v1-
+  - run:
+      name: Run OWASP Dependency Check
+      command: |
+        docker run --name owasp-dependency-check \
+          -e user=root -u root \
+          --volume $(pwd)/dependency-audit-data:/usr/share/dependency-check/data:z \
+          --volume $(pwd):/src:z \
+          --volume $(pwd)/odc-reports:/report:z \
+          owasp/dependency-check:<< parameters.dependency_check_version >> \
+          --scan /src --format "ALL" --project "<< parameters.dependency_check_project_name >>"  --out /report --cveValidForHours 24
+  - save_cache:
+      paths:
+        - dependency-audit-data
+      key: dependency-check-data-v1-{{ checksum "current_weak_information.txt" }}
+  - persist_to_workspace:
+      root: .
+      paths:
+        - odc-reports

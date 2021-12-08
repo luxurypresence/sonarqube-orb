@@ -1,0 +1,104 @@
+description: >
+  Job runs SonarQube commands scanner
+
+executor: node
+
+parameters:
+  # Analysis Parameters
+  project_key:
+    type: string
+    description: "Unique key of the Sonarqube project"
+  project_name:
+    type: string
+    description: "Name of the project that will be displayed on the web interface"
+    default: ""
+  sources:
+    type: string
+    description: "Comma-separated paths to directories containing main source files"
+    default: src
+  tests:
+    type: string
+    description: "Comma-separated paths to directories containing test source files"
+    default: src
+  # Test Converage
+  js_lcov_report_paths:
+    type: string
+    description: "Comma-delimited list of paths to LCOV coverage report files. Paths may be absolute or relative to project root"
+    default: reports/coverage/lcov.info
+  test_inclusions:
+    type: string
+    description: "Comma-delimited list of paths to test files to include as test"
+    default: "**/*.test.ts"
+  # Test Execution
+  test_execution_report_path:
+    type: string
+    description: "Comma-delimited list of paths to execution reports in the Generic Execution Data format. The paths must be relative to the project's base directory (root module)"
+    default: reports/execution-report.xml
+  # Dependency Check
+  xml_report_path:
+    type: string
+    description: "XML Report Path"
+    default: odc-reports/dependency-check-report.xml
+  json_report_path:
+    type: string
+    description: "JSON Report Path"
+    default: odc-reports/dependency-check-report.json
+  html_report_path:
+    type: string
+    description: "HTLM Report Path"
+    default: odc-reports/dependency-check-report.html
+  # Server info
+  host_url:
+    type: string
+    description: "The server URL. You can leave blank and provide env var `SONARQUBE_SERVER_URL`"
+    default: ""
+  login_token:
+    type: string
+    description: "The login or authentication token of a SonarQube user with Execute Analysis permission on the project. You can leave blank and provide env var `SONARQUBE_SERVER_LOGIN`"
+    default: ""
+  # Client CLI
+  scanner_version:
+    type: string
+    description: "SonarQube Scanner Version"
+    default: "4.5.0.2216-linux"
+  pr_target_branch:
+    type: string
+    description: "Pull Request target branch"
+    default: staging
+  pull_request:
+    type: boolean
+    description: "CircleCI Pull request trigger"
+    default: false
+  dependency_check_version:
+    type: string
+    default: "6.1.6"
+    description: "OWASP Dependency Check Version"
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: .
+  - dependency-check:
+      dependency_check_project_name: << parameters.project_key >>
+      dependency_check_version: << parameters.dependency_check_version >>
+  - run:
+      name: Install Sonarqube scanner
+      command: |
+        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.scanner_version >>.zip
+        unzip sonar-scanner-cli-<< parameters.scanner_version >>.zip
+  - sonarqube-scanner:
+      scanner_version: << parameters.scanner_version >>
+      host_url: << parameters.host_url >>
+      login_token: << parameters.login_token >>
+      project_key: << parameters.project_key >>
+      project_name: << parameters.project_name >>
+      sources: << parameters.sources >>
+      tests: << parameters.tests >>
+      js_lcov_report_paths: << parameters.js_lcov_report_paths >>
+      test_execution_report_path: << parameters.test_execution_report_path >>
+      test_inclusions: << parameters.test_inclusions >>
+      xml_report_path: << parameters.xml_report_path >>
+      json_report_path: << parameters.json_report_path >>
+      html_report_path: << parameters.html_report_path >>
+      pr_target_branch: << parameters.pr_target_branch >>
+      build_pr: << parameters.pull_request >>
