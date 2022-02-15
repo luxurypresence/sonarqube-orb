@@ -81,31 +81,27 @@ steps:
         if [ -z "${PROJECT_NAME}" ]; then
             PROJECT_NAME=$PROJECT_KEY
         fi
-        JAVA_OPTS="-Dsonar.branch.name=$CIRCLE_BRANCH"
+        SONAR_CMD_SCOPE="-Dsonar.branch.name=$CIRCLE_BRANCH"
         if [ "${BUILD_PR}" = 1 ]; then
-          JAVA_OPTS="$JAVA_OPTS -Dsonar.pullrequest.key=$CIRCLE_PULL_REQUEST -Dsonar.pullrequest.branch=$CIRCLE_BRANCH -Dsonar.pullrequest.base=$PR_TARGET_BRANCH"
+          SONAR_CMD_SCOPE="-Dsonar.pullrequest.key=$CIRCLE_PULL_REQUEST -Dsonar.pullrequest.branch=$CIRCLE_BRANCH -Dsonar.pullrequest.base=$PR_TARGET_BRANCH"
         fi
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.host.url=$SERVER_URL"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.login=$LOGIN_TOKEN"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.projectKey=<< parameters.project_key >>"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.projectName=\"$PROJECT_NAME\""
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.sources=<< parameters.sources >>"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.tests=<< parameters.tests >>"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.javascript.lcov.reportPaths=<< parameters.js_lcov_report_paths >>"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.testExecutionReportPaths=<< parameters.test_execution_report_path >>"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.test.inclusions=\"$TEST_INCLUSIONS\""
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.dependencyCheck.xmlReportPath=<< parameters.xml_report_path >>"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.dependencyCheck.jsonReportPath=<< parameters.json_report_path >>"
-        JAVA_OPTS="$JAVA_OPTS -Dsonar.dependencyCheck.htmlReportPath=<< parameters.html_report_path >>"
         echo "BUILD_PR ${BUILD_PR}"
         echo "SONAR_CMD_SCOPE ${SONAR_CMD_SCOPE}"
         echo "CIRCLE_PULL_REQUEST ${CIRCLE_PULL_REQUEST}"
-        echo "JAVA_OPTS ${JAVA_OPTS}"
-        docker run \
-            --rm \
-            -e JAVA_OPTS="$JAVA_OPTS" \
-            -v $(pwd):/usr/src \
-            sonarsource/sonar-scanner-cli:<< parameters.scanner_version >>
+        docker run --rm -v $(pwd):/usr/src sonarsource/sonar-scanner-cli:<< parameters.scanner_version >> \
+          -Dsonar.host.url=$SERVER_URL \
+          -Dsonar.login=$LOGIN_TOKEN \
+          -Dsonar.projectKey=<< parameters.project_key >> \
+          -Dsonar.projectName="$PROJECT_NAME" \
+          -Dsonar.sources=<< parameters.sources >> \
+          -Dsonar.tests=<< parameters.tests >> \
+          -Dsonar.javascript.lcov.reportPaths=<< parameters.js_lcov_report_paths >> \
+          -Dsonar.testExecutionReportPaths=<< parameters.test_execution_report_path >> \
+          -Dsonar.test.inclusions="$TEST_INCLUSIONS" \
+          -Dsonar.dependencyCheck.xmlReportPath=<< parameters.xml_report_path >> \
+          -Dsonar.dependencyCheck.jsonReportPath=<< parameters.json_report_path >> \
+          -Dsonar.dependencyCheck.htmlReportPath=<< parameters.html_report_path >> \
+          $SONAR_CMD_SCOPE
       environment:
         SERVER_URL: << parameters.host_url >>
         LOGIN_TOKEN: << parameters.login_token >>
