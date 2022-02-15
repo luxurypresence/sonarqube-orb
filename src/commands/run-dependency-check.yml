@@ -7,7 +7,7 @@ parameters:
     description: "Name used by OWASP Dependency Check"
   version:
     type: string
-    default: "6.1.6"
+    default: "6.5.3"
     description: "OWASP Dependency Check Version"
   report_path:
     type: string
@@ -23,15 +23,23 @@ steps:
         - dependency-check-data-v1-{{ checksum "current_weak_information.txt" }}
         - dependency-check-data-v1-
   - run:
+      name: Create OWASP Dependency Check Config file
+      command: |
+        cat <<EOT >> app.properties
+          analyzer.dependencybundling.enabled=false
+          analyzer.dependencymerging.enabled=false
+        EOT
+  - run:
       name: Run OWASP Dependency Check
       command: |
         docker run --name owasp-dependency-check \
           -e user=root -u root \
           --volume $(pwd)/dependency-audit-data:/usr/share/dependency-check/data:z \
           --volume $(pwd):/src:z \
+          --volume $(pwd)/app.properties:/app.properties:z \
           --volume $(pwd)/odc-reports:/report:z \
           owasp/dependency-check:<< parameters.version >> \
-          --scan /src --format "ALL" --project "<< parameters.project_name >>"  --out /report --cveValidForHours 24
+          --scan /src --format "ALL" --project "<< parameters.project_name >>"  --out /report --cveValidForHours 24 --propertyfile /app.properties
   - save_cache:
       paths:
         - dependency-audit-data
