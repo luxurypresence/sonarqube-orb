@@ -25,10 +25,8 @@ steps:
   - run:
       name: Create OWASP Dependency Check Config file
       command: |
-        cat <<EOT >> app.properties
-          analyzer.dependencybundling.enabled=false
-          analyzer.dependencymerging.enabled=false
-        EOT
+        echo "analyzer.dependencybundling.enabled=false" >> app.properties
+        echo "analyzer.dependencymerging.enabled=false" >> app.properties
   - run:
       name: Run OWASP Dependency Check
       command: |
