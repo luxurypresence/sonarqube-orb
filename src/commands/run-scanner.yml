@@ -88,9 +88,10 @@ steps:
         echo "BUILD_PR ${BUILD_PR}"
         echo "SONAR_CMD_SCOPE ${SONAR_CMD_SCOPE}"
         echo "CIRCLE_PULL_REQUEST ${CIRCLE_PULL_REQUEST}"
-        docker run --rm -v $(pwd):/usr/src sonarsource/sonar-scanner-cli:<< parameters.scanner_version >> \
+        docker run --rm -v $(pwd):$(pwd) sonarsource/sonar-scanner-cli:<< parameters.scanner_version >> \
           -Dsonar.host.url=$SERVER_URL \
           -Dsonar.login=$LOGIN_TOKEN \
+          -Dsonar.projectBaseDir=$(pwd) \
           -Dsonar.projectKey=<< parameters.project_key >> \
           -Dsonar.projectName="$PROJECT_NAME" \
           -Dsonar.sources=<< parameters.sources >> \
