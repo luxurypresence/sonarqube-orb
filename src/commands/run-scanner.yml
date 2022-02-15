@@ -103,7 +103,7 @@ steps:
         echo "JAVA_OPTS ${JAVA_OPTS}"
         docker run \
             --rm \
-            -e JAVA_OPTS=$JAVA_OPTS \
+            -e JAVA_OPTS="$JAVA_OPTS" \
             -v $(pwd):/usr/src \
             sonarsource/sonar-scanner-cli:<< parameters.scanner_version >>
       environment:
