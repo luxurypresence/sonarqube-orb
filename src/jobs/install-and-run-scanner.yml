@@ -60,7 +60,7 @@ parameters:
   scanner_version:
     type: string
     description: "SonarQube Scanner Version"
-    default: "4.5.0.2216-linux"
+    default: "4.6"
   pr_target_branch:
     type: string
     description: "Pull Request target branch"
@@ -74,8 +74,6 @@ steps:
   - checkout
   - attach_workspace:
       at: .
-  - install-scanner:
-      scanner_version: << parameters.scanner_version >>
   - run-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>

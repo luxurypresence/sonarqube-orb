@@ -60,7 +60,7 @@ parameters:
   scanner_version:
     type: string
     description: "SonarQube Scanner Version"
-    default: "4.5.0.2216-linux"
+    default: "4.6"
   pr_target_branch:
     type: string
     description: "Pull Request target branch"
@@ -71,7 +71,7 @@ parameters:
     default: false
   dependency_check_version:
     type: string
-    default: "6.1.6"
+    default: "6.5.3"
     description: "OWASP Dependency Check Version"
   dependency_report_path:
     type: string
@@ -86,8 +86,6 @@ steps:
       project_name: << parameters.project_key >>
       version: << parameters.dependency_check_version >>
       report_path: << parameters.dependency_report_path >>
-  - install-scanner:
-      scanner_version: << parameters.scanner_version >>
   - run-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
