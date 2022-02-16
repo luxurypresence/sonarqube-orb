@@ -87,9 +87,8 @@ working_directory: ~/repo/<< parameters.root_dir >>
 steps:
   - checkout:
       path: ~/repo
-  - run: pwd
   - attach_workspace:
-      at: .
+      at: ~/repo
   - run-dependency-check:
       project_name: << parameters.project_key >>
       version: << parameters.dependency_check_version >>
