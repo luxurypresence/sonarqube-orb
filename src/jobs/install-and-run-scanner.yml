@@ -75,10 +75,9 @@ parameters:
     default: "."
 
 steps:
-  - checkout:
-      path: ~/repo
+  - checkout
   - attach_workspace:
-      at: ~/repo
+      at: .
   - run-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
@@ -95,3 +94,4 @@ steps:
       html_report_path: << parameters.html_report_path >>
       pr_target_branch: << parameters.pr_target_branch >>
       build_pr: << parameters.pull_request >>
+      root_dir: << parameters.root_dir >>

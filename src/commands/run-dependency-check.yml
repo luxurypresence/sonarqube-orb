@@ -13,6 +13,10 @@ parameters:
     type: string
     description: "Dependency Report Path"
     default: odc-reports
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
 
 steps:
   - run:
@@ -33,9 +37,9 @@ steps:
         docker run --name owasp-dependency-check \
           -e user=root -u root \
           --volume $(pwd)/dependency-audit-data:/usr/share/dependency-check/data:z \
-          --volume $(pwd):/src:z \
+          --volume $(pwd)/<< parameters.root_dir >>:/src:z \
           --volume $(pwd)/app.properties:/app.properties:z \
-          --volume $(pwd)/odc-reports:/report:z \
+          --volume $(pwd)/<< parameters.root_dir >>/odc-reports:/report:z \
           owasp/dependency-check:<< parameters.version >> \
           --scan /src --format "ALL" --project "<< parameters.project_name >>"  --out /report --cveValidForHours 24 --propertyfile /app.properties
   - save_cache:

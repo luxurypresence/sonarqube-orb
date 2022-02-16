@@ -67,6 +67,10 @@ parameters:
     type: string
     description: "Pull Request target branch"
     default: staging
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
 
 steps:
   - run:
@@ -94,14 +98,14 @@ steps:
           -Dsonar.projectBaseDir=$(pwd) \
           -Dsonar.projectKey=<< parameters.project_key >> \
           -Dsonar.projectName="$PROJECT_NAME" \
-          -Dsonar.sources=<< parameters.sources >> \
-          -Dsonar.tests=<< parameters.tests >> \
-          -Dsonar.javascript.lcov.reportPaths=<< parameters.js_lcov_report_paths >> \
-          -Dsonar.testExecutionReportPaths=<< parameters.test_execution_report_path >> \
+          -Dsonar.sources=<< parameters.root_dir >>/<< parameters.sources >> \
+          -Dsonar.tests=<< parameters.root_dir >>/<< parameters.tests >> \
+          -Dsonar.javascript.lcov.reportPaths=<< parameters.root_dir >>/<< parameters.js_lcov_report_paths >> \
+          -Dsonar.testExecutionReportPaths=<< parameters.root_dir >>/<< parameters.test_execution_report_path >> \
           -Dsonar.test.inclusions="$TEST_INCLUSIONS" \
-          -Dsonar.dependencyCheck.xmlReportPath=<< parameters.xml_report_path >> \
-          -Dsonar.dependencyCheck.jsonReportPath=<< parameters.json_report_path >> \
-          -Dsonar.dependencyCheck.htmlReportPath=<< parameters.html_report_path >> \
+          -Dsonar.dependencyCheck.xmlReportPath=<< parameters.root_dir >>/<< parameters.xml_report_path >> \
+          -Dsonar.dependencyCheck.jsonReportPath=<< parameters.root_dir >>/<< parameters.json_report_path >> \
+          -Dsonar.dependencyCheck.htmlReportPath=<< parameters.root_dir >>/<< parameters.html_report_path >> \
           $SONAR_CMD_SCOPE
       environment:
         SERVER_URL: << parameters.host_url >>
