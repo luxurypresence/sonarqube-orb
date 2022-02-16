@@ -19,10 +19,13 @@ parameters:
     description: "Root location of the sources to analyze"
     default: "."
 
+working_directory: ~/repo/<< parameters.root_dir >>
+
 steps:
-  - checkout
+  - checkout:
+      path: ~/repo
   - attach_workspace:
-      at: .
+      at: ~/repo
   - run-dependency-check:
       project_name: << parameters.project_name >>
       version: << parameters.version >>
