@@ -77,9 +77,17 @@ parameters:
     type: string
     description: "Dependency Report Path"
     default: odc-reports
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
+
+working_directory: ~/repo/<< parameters.root_dir >>
 
 steps:
-  - checkout
+  - checkout:
+      path: ~/repo
+  - run: pwd
   - attach_workspace:
       at: .
   - run-dependency-check:

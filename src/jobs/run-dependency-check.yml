@@ -14,6 +14,10 @@ parameters:
     type: string
     description: "Dependency Report Path"
     default: odc-reports
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
 
 steps:
   - checkout

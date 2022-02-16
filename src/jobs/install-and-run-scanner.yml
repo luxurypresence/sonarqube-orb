@@ -69,6 +69,10 @@ parameters:
     type: boolean
     description: "CircleCI Pull request trigger"
     default: false
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
 
 steps:
   - checkout
