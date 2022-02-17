@@ -8,12 +8,16 @@ parameters:
     description: "Name used by OWASP Dependency Check"
   version:
     type: string
-    default: "6.1.6"
+    default: "6.5.3"
     description: "OWASP Dependency Check Version"
   report_path:
     type: string
     description: "Dependency Report Path"
     default: odc-reports
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
 
 steps:
   - checkout
@@ -23,3 +27,4 @@ steps:
       project_name: << parameters.project_name >>
       version: << parameters.version >>
       report_path: << parameters.report_path >>
+      root_dir: << parameters.root_dir >>

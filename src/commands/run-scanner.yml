@@ -58,7 +58,7 @@ parameters:
   scanner_version:
     type: string
     description: "SonarQube Scanner Version"
-    default: "4.5.0.2216-linux"
+    default: "4.6"
   build_pr:
     type: boolean
     description: "Run command for branch or PR"
@@ -67,6 +67,10 @@ parameters:
     type: string
     description: "Pull Request target branch"
     default: staging
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
 
 steps:
   - run:
@@ -88,19 +92,20 @@ steps:
         echo "BUILD_PR ${BUILD_PR}"
         echo "SONAR_CMD_SCOPE ${SONAR_CMD_SCOPE}"
         echo "CIRCLE_PULL_REQUEST ${CIRCLE_PULL_REQUEST}"
-        ./sonar-scanner-<< parameters.scanner_version >>/bin/sonar-scanner \
+        docker run --rm -v $(pwd):$(pwd) sonarsource/sonar-scanner-cli:<< parameters.scanner_version >> \
           -Dsonar.host.url=$SERVER_URL \
           -Dsonar.login=$LOGIN_TOKEN \
+          -Dsonar.projectBaseDir=$(pwd) \
           -Dsonar.projectKey=<< parameters.project_key >> \
           -Dsonar.projectName="$PROJECT_NAME" \
-          -Dsonar.sources=<< parameters.sources >> \
-          -Dsonar.tests=<< parameters.tests >> \
-          -Dsonar.javascript.lcov.reportPaths=<< parameters.js_lcov_report_paths >> \
-          -Dsonar.testExecutionReportPaths=<< parameters.test_execution_report_path >> \
+          -Dsonar.sources=<< parameters.root_dir >>/<< parameters.sources >> \
+          -Dsonar.tests=<< parameters.root_dir >>/<< parameters.tests >> \
+          -Dsonar.javascript.lcov.reportPaths=<< parameters.root_dir >>/<< parameters.js_lcov_report_paths >> \
+          -Dsonar.testExecutionReportPaths=<< parameters.root_dir >>/<< parameters.test_execution_report_path >> \
           -Dsonar.test.inclusions="$TEST_INCLUSIONS" \
-          -Dsonar.dependencyCheck.xmlReportPath=<< parameters.xml_report_path >> \
-          -Dsonar.dependencyCheck.jsonReportPath=<< parameters.json_report_path >> \
-          -Dsonar.dependencyCheck.htmlReportPath=<< parameters.html_report_path >> \
+          -Dsonar.dependencyCheck.xmlReportPath=<< parameters.root_dir >>/<< parameters.xml_report_path >> \
+          -Dsonar.dependencyCheck.jsonReportPath=<< parameters.root_dir >>/<< parameters.json_report_path >> \
+          -Dsonar.dependencyCheck.htmlReportPath=<< parameters.root_dir >>/<< parameters.html_report_path >> \
           $SONAR_CMD_SCOPE
       environment:
         SERVER_URL: << parameters.host_url >>

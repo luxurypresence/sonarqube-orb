@@ -60,7 +60,7 @@ parameters:
   scanner_version:
     type: string
     description: "SonarQube Scanner Version"
-    default: "4.5.0.2216-linux"
+    default: "4.6"
   pr_target_branch:
     type: string
     description: "Pull Request target branch"
@@ -69,13 +69,15 @@ parameters:
     type: boolean
     description: "CircleCI Pull request trigger"
     default: false
+  root_dir:
+    type: string
+    description: "Root location of the sources to analyze"
+    default: "."
 
 steps:
   - checkout
   - attach_workspace:
       at: .
-  - install-scanner:
-      scanner_version: << parameters.scanner_version >>
   - run-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
@@ -92,3 +94,4 @@ steps:
       html_report_path: << parameters.html_report_path >>
       pr_target_branch: << parameters.pr_target_branch >>
       build_pr: << parameters.pull_request >>
+      root_dir: << parameters.root_dir >>
