@@ -19,6 +19,8 @@ parameters:
     default: "."
 
 steps:
+  - run: ls
+  - run: pwd
   - run:
       name: Create file with current year and weak information - needed for cache
       command: echo "$(date +%U)-$(date +%Y)" > current_weak_information.txt
