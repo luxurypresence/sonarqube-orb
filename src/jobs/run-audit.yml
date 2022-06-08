@@ -25,6 +25,10 @@ parameters:
     type: string
     description: "Comma-delimited list of paths to LCOV coverage report files. Paths may be absolute or relative to project root"
     default: reports/coverage/lcov.info
+  ruby_simplecov_report_paths:
+    type: string
+    description: "Comma-delimited list of paths to SimpleCov coverage report files. Paths may be absolute or relative to project root"
+    default: ""
   test_inclusions:
     type: string
     description: "Comma-delimited list of paths to test files to include as test"
@@ -100,6 +104,7 @@ steps:
       sources: << parameters.sources >>
       tests: << parameters.tests >>
       js_lcov_report_paths: << parameters.js_lcov_report_paths >>
+      ruby_simplecov_report_paths: << parameters.ruby_simplecov_report_paths >>
       test_execution_report_path: << parameters.test_execution_report_path >>
       test_inclusions: << parameters.test_inclusions >>
       xml_report_path: << parameters.xml_report_path >>
