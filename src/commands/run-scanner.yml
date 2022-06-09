@@ -106,7 +106,7 @@ steps:
           -Dsonar.tests=<< parameters.root_dir >>/<< parameters.tests >> \
           <<# parameters.js_lcov_report_paths >>-Dsonar.javascript.lcov.reportPaths=<< parameters.root_dir >>/<< parameters.js_lcov_report_paths >><</ parameters.js_lcov_report_paths >> \
           <<# parameters.ruby_simplecov_report_paths >>-Dsonar.ruby.coverage.reportPaths=<< parameters.root_dir >>/<< parameters.ruby_simplecov_report_paths >><</ parameters.ruby_simplecov_report_paths >> \
-          <<# parameters.test_execution_report_path >>-Dsonar.testExecutionReportPaths=<< parameters.root_dir >>/<< parameters.test_execution_report_path >> \ <</ parameters.test_execution_report_path >> \
+          <<# parameters.test_execution_report_path >>-Dsonar.testExecutionReportPaths=<< parameters.root_dir >>/<< parameters.test_execution_report_path >><</ parameters.test_execution_report_path >> \
           -Dsonar.test.inclusions="$TEST_INCLUSIONS" \
           -Dsonar.dependencyCheck.xmlReportPath=<< parameters.root_dir >>/<< parameters.xml_report_path >> \
           -Dsonar.dependencyCheck.jsonReportPath=<< parameters.root_dir >>/<< parameters.json_report_path >> \
