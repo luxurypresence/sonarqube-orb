@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   # Replace this with your own!
-  sonarqube: luxurypresence/sonarqube@<<pipeline.parameters.dev-orb-version>>
+  sonarqube: luxurypresence/sonarqube@7.0 #<<pipeline.parameters.dev-orb-version>>
   orb-tools: circleci/orb-tools@10.0
 
 # Pipeline Parameters
