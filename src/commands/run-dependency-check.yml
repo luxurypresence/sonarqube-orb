@@ -7,7 +7,7 @@ parameters:
     description: "Name used by OWASP Dependency Check"
   version:
     type: string
-    default: "6.5.4"
+    default: "6.5.3"
     description: "OWASP Dependency Check Version"
   report_path:
     type: string
