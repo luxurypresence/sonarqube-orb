@@ -75,7 +75,7 @@ parameters:
     default: false
   dependency_check_version:
     type: string
-    default: "6.5.3"
+    default: "7.4.4"
     description: "OWASP Dependency Check Version"
   dependency_report_path:
     type: string
