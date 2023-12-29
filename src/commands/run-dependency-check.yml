@@ -41,7 +41,7 @@ steps:
           --volume $(pwd)/app.properties:/app.properties:z \
           --volume $(pwd)/<< parameters.root_dir >>/<< parameters.report_path >>:/report:z \
           owasp/dependency-check:<< parameters.version >> \
-          --scan /src --format "ALL" --ossIndexUsername $OSS_INDEX_USERNAME --ossIndexPassword $OSS_INDEX_PASSWORD --nvdApiKey $NVD_API_KEY --project "<< parameters.project_name >>"  --out /report --nvdValidForHours	24 --propertyfile /app.properties
+          --scan /src --format "ALL" --ossIndexUsername $OSS_INDEX_USERNAME --ossIndexPassword $OSS_INDEX_PASSWORD --nvdApiKey $NVD_API_KEY --project "<< parameters.project_name >>"  --out /report --nvdValidForHours 24 --propertyfile /app.properties
   - save_cache:
       paths:
         - dependency-audit-data
