@@ -100,10 +100,10 @@ steps:
         echo "BUILD_PR ${BUILD_PR}"
         echo "SONAR_CMD_SCOPE ${SONAR_CMD_SCOPE}"
         echo "CIRCLE_PULL_REQUEST ${CIRCLE_PULL_REQUEST}"
-        
+
         # Function to expand wildcards in a comma-separated list
         expand_wildcards() {
-            IFS=',' read -ra ADDR <<< "$1"
+            IFS=',' read -ra ADDR \<<< "$1"
             for i in "${ADDR[@]}"; do
                 # Expand wildcard and append to the list
                 for file in << parameters.root_dir >>/$i; do
@@ -118,15 +118,15 @@ steps:
         tests=$(expand_wildcards "<< parameters.tests >>")
         js_lcov_report_paths=$(expand_wildcards "<< parameters.js_lcov_report_paths >>")
         test_execution_report_path=$(expand_wildcards "<< parameters.test_execution_report_path >>")
-        
+
         docker run --rm -v $(pwd):$(pwd) sonarsource/sonar-scanner-cli:<< parameters.scanner_version >> \
           -Dsonar.host.url=$SERVER_URL \
           -Dsonar.login=$LOGIN_TOKEN \
           -Dsonar.projectBaseDir=$(pwd) \
           -Dsonar.projectKey=<< parameters.project_key >> \
           -Dsonar.projectName="$PROJECT_NAME" \
-          -Dsonar.sources=$sources \
-          -Dsonar.tests=$tests \
+          -Dsonar.sources="$sources" \
+          -Dsonar.tests="$tests" \
           <<# parameters.js_lcov_report_paths >>-Dsonar.javascript.lcov.reportPaths=$js_lcov_report_paths<</ parameters.js_lcov_report_paths >> \
           <<# parameters.test_execution_report_path >>-Dsonar.testExecutionReportPaths=$test_execution_report_path<</ parameters.test_execution_report_path >> \
           <<# parameters.ruby_simplecov_report_paths >>-Dsonar.ruby.coverage.reportPaths=<< parameters.root_dir >>/<< parameters.ruby_simplecov_report_paths >><</ parameters.ruby_simplecov_report_paths >> \
