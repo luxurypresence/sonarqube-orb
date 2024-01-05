@@ -134,7 +134,7 @@ steps:
           -Dsonar.dependencyCheck.xmlReportPath=<< parameters.root_dir >>/<< parameters.xml_report_path >> \
           -Dsonar.dependencyCheck.jsonReportPath=<< parameters.root_dir >>/<< parameters.json_report_path >> \
           -Dsonar.dependencyCheck.htmlReportPath=<< parameters.root_dir >>/<< parameters.html_report_path >> \
-          -Dsonar.javascript.node.maxspace=<< parameters.node_max_space >>
+          -Dsonar.javascript.node.maxspace=<< parameters.node_max_space >> \
           $SONAR_CMD_SCOPE
       environment:
         SERVER_URL: << parameters.host_url >>
