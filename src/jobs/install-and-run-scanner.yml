@@ -77,6 +77,10 @@ parameters:
     type: string
     description: "Root location of the sources to analyze"
     default: "."
+  node_max_space:
+    type: string
+    description: "Node max space"
+    default: "4096"
 
 steps:
   - checkout
@@ -100,3 +104,4 @@ steps:
       pr_target_branch: << parameters.pr_target_branch >>
       build_pr: << parameters.pull_request >>
       root_dir: << parameters.root_dir >>
+      node_max_space: << parameters.node_max_space >>

@@ -62,7 +62,7 @@ parameters:
   scanner_version:
     type: string
     description: "SonarQube Scanner Version"
-    default: "4.6"
+    default: "5.0"
   build_pr:
     type: boolean
     description: "Run command for branch or PR"
@@ -75,6 +75,10 @@ parameters:
     type: string
     description: "Root location of the sources to analyze"
     default: "."
+  node_max_space:
+    type: string
+    description: "Node max space"
+    default: "4096"
 
 steps:
   - run:
@@ -96,21 +100,41 @@ steps:
         echo "BUILD_PR ${BUILD_PR}"
         echo "SONAR_CMD_SCOPE ${SONAR_CMD_SCOPE}"
         echo "CIRCLE_PULL_REQUEST ${CIRCLE_PULL_REQUEST}"
+
+        # Function to expand wildcards in a comma-separated list
+        expand_wildcards() {
+            IFS=',' read -ra ADDR \<<< "$1"
+            for i in "${ADDR[@]}"; do
+                # Expand wildcard and append to the list
+                for file in << parameters.root_dir >>/$i; do
+                    expanded="$expanded,$file"
+                done
+            done
+            echo "${expanded:1}" # Removes leading comma
+        }
+
+        # Expand wildcards in parameters
+        sources=$(expand_wildcards "<< parameters.sources >>")
+        tests=$(expand_wildcards "<< parameters.tests >>")
+        js_lcov_report_paths=$(expand_wildcards "<< parameters.js_lcov_report_paths >>")
+        test_execution_report_path=$(expand_wildcards "<< parameters.test_execution_report_path >>")
+
         docker run --rm -v $(pwd):$(pwd) sonarsource/sonar-scanner-cli:<< parameters.scanner_version >> \
           -Dsonar.host.url=$SERVER_URL \
           -Dsonar.login=$LOGIN_TOKEN \
           -Dsonar.projectBaseDir=$(pwd) \
           -Dsonar.projectKey=<< parameters.project_key >> \
           -Dsonar.projectName="$PROJECT_NAME" \
-          -Dsonar.sources=<< parameters.root_dir >>/<< parameters.sources >> \
-          -Dsonar.tests=<< parameters.root_dir >>/<< parameters.tests >> \
-          <<# parameters.js_lcov_report_paths >>-Dsonar.javascript.lcov.reportPaths=<< parameters.root_dir >>/<< parameters.js_lcov_report_paths >><</ parameters.js_lcov_report_paths >> \
+          -Dsonar.sources="$sources" \
+          -Dsonar.tests="$tests" \
+          <<# parameters.js_lcov_report_paths >>-Dsonar.javascript.lcov.reportPaths=$js_lcov_report_paths<</ parameters.js_lcov_report_paths >> \
+          <<# parameters.test_execution_report_path >>-Dsonar.testExecutionReportPaths=$test_execution_report_path<</ parameters.test_execution_report_path >> \
           <<# parameters.ruby_simplecov_report_paths >>-Dsonar.ruby.coverage.reportPaths=<< parameters.root_dir >>/<< parameters.ruby_simplecov_report_paths >><</ parameters.ruby_simplecov_report_paths >> \
-          <<# parameters.test_execution_report_path >>-Dsonar.testExecutionReportPaths=<< parameters.root_dir >>/<< parameters.test_execution_report_path >><</ parameters.test_execution_report_path >> \
           -Dsonar.test.inclusions="$TEST_INCLUSIONS" \
           -Dsonar.dependencyCheck.xmlReportPath=<< parameters.root_dir >>/<< parameters.xml_report_path >> \
           -Dsonar.dependencyCheck.jsonReportPath=<< parameters.root_dir >>/<< parameters.json_report_path >> \
           -Dsonar.dependencyCheck.htmlReportPath=<< parameters.root_dir >>/<< parameters.html_report_path >> \
+          -Dsonar.javascript.node.maxspace=<< parameters.node_max_space >>
           $SONAR_CMD_SCOPE
       environment:
         SERVER_URL: << parameters.host_url >>
