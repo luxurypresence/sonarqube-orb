@@ -17,6 +17,10 @@ parameters:
     type: string
     description: "Root location of the sources to analyze"
     default: "."
+  no_output_timeout:
+    type: string
+    description: Elapsed time the command can run without output. Passed to install command.
+    default: "10m"
 
 steps:
   - run:
@@ -42,6 +46,7 @@ steps:
           --volume $(pwd)/<< parameters.root_dir >>/<< parameters.report_path >>:/report:z \
           owasp/dependency-check:<< parameters.version >> \
           --scan /src --format "ALL" --ossIndexUsername $OSS_INDEX_USERNAME --ossIndexPassword $OSS_INDEX_PASSWORD --nvdApiKey $NVD_API_KEY --project "<< parameters.project_name >>" --nvdApiDelay $NVD_API_DELAY --out /report --nvdValidForHours 24 --propertyfile /app.properties
+      no_output_timeout: << parameters.no_output_timeout >>
   - save_cache:
       paths:
         - dependency-audit-data
