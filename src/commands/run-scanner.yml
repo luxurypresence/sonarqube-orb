@@ -79,10 +79,6 @@ parameters:
     type: string
     description: "Node max space"
     default: "4096"
-  no_output_timeout:
-    type: string
-    description: Elapsed time the command can run without output. Passed to install command.
-    default: "10m"
 
 steps:
   - run:
@@ -140,7 +136,6 @@ steps:
           -Dsonar.dependencyCheck.htmlReportPath=<< parameters.root_dir >>/<< parameters.html_report_path >> \
           -Dsonar.javascript.node.maxspace=<< parameters.node_max_space >> \
           $SONAR_CMD_SCOPE
-      no_output_timeout: << parameters.no_output_timeout >>
       environment:
         SERVER_URL: << parameters.host_url >>
         LOGIN_TOKEN: << parameters.login_token >>

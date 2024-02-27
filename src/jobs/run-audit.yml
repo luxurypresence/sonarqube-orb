@@ -103,6 +103,7 @@ steps:
       version: << parameters.dependency_check_version >>
       report_path: << parameters.dependency_report_path >>
       root_dir: << parameters.root_dir >>
+      no_output_timeout: << parameters.no_output_timeout >>
   - run-scanner:
       scanner_version: << parameters.scanner_version >>
       host_url: << parameters.host_url >>
@@ -122,4 +123,3 @@ steps:
       build_pr: << parameters.pull_request >>
       root_dir: << parameters.root_dir >>
       node_max_space: << parameters.node_max_space >>
-      no_output_timeout: << parameters.no_output_timeout >>
