@@ -1,5 +1,5 @@
 description: >
   This is default executor
 machine:
-  image: ubuntu-2004:202010-01
+  image: ubuntu-2004:2023.10.1
   docker_layer_caching: true
